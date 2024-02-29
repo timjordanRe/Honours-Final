@@ -37,6 +37,7 @@ end
 disp('-> Selecting features based on correlation with performance.');
 [out.rho,out.p] = corr(X,Y,'rows','pairwise');
 rho = out.rho;
+disp(rho);
 rho(isnan(rho) | (out.p>0.05)) = 0;
 [rho,row] = sort(abs(rho),1,'descend');
 out.selvars = false(1,nfeats);
@@ -46,8 +47,12 @@ out.selvars(unique(row(1,:))) = true;
 for ii=2:nfeats
     out.selvars(unique(row(ii,rho(ii,:)>=opts.rho))) = true;
 end
+disp('--------');
+disp(find(out.selvars));
+disp('--------');
 out.selvars = find(out.selvars);
 Xaux = X(:,out.selvars);
+
 disp(['-> Keeping ' num2str(size(Xaux,2)) ' out of ' num2str(nfeats) ' features (correlation).']);
 
 % ---------------------------------------------------------------------
