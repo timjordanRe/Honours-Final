@@ -50,7 +50,8 @@ data
 data =as.data.frame(data)
 rownames(data) <- data$Feature
 data <- data[,-1]  # Remove the first column as it's now row names
-data = data[c(-8,-9),] # Remove sensitive attribute
+data = data[c(-1,-8,-9),] # Remove sensitive attribute
+
 
 # Convert data to numeric, in case it's not
 
@@ -70,7 +71,8 @@ ComplexHeatmap::pheatmap(as.matrix(data), cluster_rows = T, cluster_cols = F,
                          name = "correlation")
 
 
-# convert to ranking -------------------------------------------------------
+# bump chart for census ---------------------------------------------------
+
 
 rank_df <- data.frame(
   RF = rowMeans(data[, 1:3]),
@@ -107,16 +109,24 @@ long_data
 
 
 ggplot(long_data, aes(x = `ML Model`, y = Rank, group = Attribute, color = Attribute)) +
-  geom_bump(size = 1) +
+  geom_bump(size = 3) +
   geom_point(size = 6) +
-  scale_y_reverse(limits = c(11, 1)) +  # Reverse the Y axis so that rank 1 is at the top
+  scale_y_reverse(limits = c(10, 1)) +  # Reverse the Y axis so that rank 1 is at the top
   geom_text(data = long_data %>% filter(`ML Model` == min(`ML Model`)),
-            aes(x=rep(0.9,11), label = Attribute),
+            aes(x=rep(0.9,10), label = Attribute),
             size = 5, hjust = 1) +
   geom_text(data = long_data %>% filter(`ML Model` == max(`ML Model`)),
-            aes(x=rep(3.1,11), label = Attribute),
+            aes(x=rep(3.1,10), label = Attribute),
             size = 5, hjust = 0) +
-  theme(legend.position = "none")
+  scale_y_reverse(limits = c(10, 1), breaks = seq(10,1,-1)) +
+  xlab("Classifier Models") +  # Custom x-axis label
+  ylab("Importance Rank") +
+  theme(legend.position = "none",
+        axis.text.y = element_text(size = 14),  # Adjust size of y-axis rank values
+        axis.text.x = element_text(size = 12),  # Adjust size of x-axis ML Model labels)
+        axis.title.x = element_text(size = 16), # Change size of the x-axis label
+        axis.title.y = element_text(size = 16)) # Change size of the y-axis label
+
 
 
 
@@ -157,7 +167,7 @@ long_data
 
 
 ggplot(long_data, aes(x = `ML Model`, y = Rank, group = Attribute, color = Attribute)) +
-  geom_bump(size = 1) +
+  geom_bump(size = 3) +
   geom_point(size = 6) +
   scale_y_reverse(limits = c(15, 1)) +  # Reverse the Y axis so that rank 1 is at the top
   geom_text(data = long_data %>% filter(`ML Model` == min(`ML Model`)),
@@ -166,4 +176,13 @@ ggplot(long_data, aes(x = `ML Model`, y = Rank, group = Attribute, color = Attri
   geom_text(data = long_data %>% filter(`ML Model` == max(`ML Model`)),
             aes(x=rep(3.1,15), label = Attribute),
             size = 5, hjust = 0) +
-  theme(legend.position = "none")
+  scale_y_reverse(limits = c(15, 1), breaks = seq(15,1,-1)) +
+  xlab("Classifier Models") +  # Custom x-axis label
+  ylab("Importance Rank") +
+  theme(legend.position = "none",
+        axis.text.y = element_text(size = 14),  # Adjust size of y-axis rank values
+        axis.text.x = element_text(size = 12),  # Adjust size of x-axis ML Model labels)
+        axis.title.x = element_text(size = 16), # Change size of the x-axis label
+        axis.title.y = element_text(size = 16)) # Change size of the y-axis label
+
+
